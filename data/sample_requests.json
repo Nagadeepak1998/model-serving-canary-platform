@@ -1,0 +1,22 @@
+[
+  {
+    "ticket_id": "INC-10091",
+    "account_tier": "enterprise",
+    "minutes_open": 215,
+    "message_length": 890,
+    "sentiment_score": -0.51,
+    "similar_incidents": 5,
+    "escalation_keywords": 3,
+    "canary_percent": 50
+  },
+  {
+    "ticket_id": "INC-10092",
+    "account_tier": "business",
+    "minutes_open": 43,
+    "message_length": 230,
+    "sentiment_score": 0.14,
+    "similar_incidents": 1,
+    "escalation_keywords": 0,
+    "canary_percent": 10
+  }
+]

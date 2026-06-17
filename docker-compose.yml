@@ -1,0 +1,10 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile
+    environment:
+      DEFAULT_CANARY_PERCENT: 25
+      SHADOW_MODE: "true"
+    ports:
+      - "8000:8000"

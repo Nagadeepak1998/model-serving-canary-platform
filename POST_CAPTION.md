@@ -1,0 +1,1 @@
+Built `model-serving-canary-platform`, a production-shaped FastAPI repo that shows deterministic canary routing, shadow model comparison, Prometheus metrics, Docker, Kubernetes, and Terraform deployment shape. It is a compact MLOps release-safety project aimed at AI platform and cloud platform roles.

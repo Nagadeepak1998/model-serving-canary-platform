@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-serving-canary-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: model-serving-canary-platform
+  template:
+    metadata:
+      labels:
+        app: model-serving-canary-platform
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8000"
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/nagadeepak1998/model-serving-canary-platform:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEFAULT_CANARY_PERCENT
+              value: "25"
+            - name: SHADOW_MODE
+              value: "true"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
