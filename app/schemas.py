@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from model_serving_canary_platform.models import PredictionFeatures
+from model_serving_canary_platform.models import PredictionFeatures, RolloutEvaluationRequest
 
 
 class PredictRequest(PredictionFeatures):
@@ -16,3 +16,7 @@ class PredictResponse(BaseModel):
     canary_risk_score: float
     priority_changed: bool
     route_reason: str
+
+
+class ApiRolloutEvaluationRequest(RolloutEvaluationRequest):
+    pass

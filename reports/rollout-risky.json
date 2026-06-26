@@ -1,0 +1,43 @@
+{
+  "decision": "rollback",
+  "canary_percent": 50,
+  "case_count": 3,
+  "priority_mismatch_rate": 1.0,
+  "average_score_delta": 0.153,
+  "max_score_delta": 0.17,
+  "expected_priority_miss_rate": 1.0,
+  "reasons": [
+    "priority mismatch rate 1.0 exceeds threshold 0.2",
+    "average score delta 0.153 exceeds threshold 0.1",
+    "expected priority miss rate is 1.0"
+  ],
+  "cases": [
+    {
+      "ticket_id": "INC-20001",
+      "baseline_priority": "medium",
+      "canary_priority": "high",
+      "score_delta": 0.12,
+      "priority_changed": true,
+      "expected_priority": "medium",
+      "expected_priority_matched": false
+    },
+    {
+      "ticket_id": "INC-20002",
+      "baseline_priority": "high",
+      "canary_priority": "critical",
+      "score_delta": 0.17,
+      "priority_changed": true,
+      "expected_priority": "high",
+      "expected_priority_matched": false
+    },
+    {
+      "ticket_id": "INC-20003",
+      "baseline_priority": "high",
+      "canary_priority": "critical",
+      "score_delta": 0.17,
+      "priority_changed": true,
+      "expected_priority": "high",
+      "expected_priority_matched": false
+    }
+  ]
+}

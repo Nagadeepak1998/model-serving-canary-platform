@@ -7,10 +7,15 @@ from app.config import settings
 from app.metrics import (
     prediction_latency_seconds,
     prediction_requests_total,
+    rollout_average_score_delta,
+    rollout_evaluations_total,
+    rollout_priority_mismatch_rate,
     shadow_priority_mismatch_total,
 )
-from app.schemas import PredictRequest, PredictResponse
+from app.schemas import ApiRolloutEvaluationRequest, PredictRequest, PredictResponse
+from model_serving_canary_platform.evaluation import RolloutEvaluator
 from model_serving_canary_platform.inference import baseline_predict, canary_predict
+from model_serving_canary_platform.models import RolloutEvaluationReport
 from model_serving_canary_platform.rollout import CanaryRouter
 from model_serving_canary_platform.shadow import ShadowComparator
 
@@ -24,6 +29,10 @@ class PredictionService:
             canary_model=settings.canary_model_name,
         )
         self.shadow = ShadowComparator()
+        self.evaluator = RolloutEvaluator(
+            baseline_model=settings.baseline_model_name,
+            canary_model=settings.canary_model_name,
+        )
 
     def predict(self, request: PredictRequest) -> PredictResponse:
         canary_percent = request.canary_percent
@@ -66,3 +75,10 @@ class PredictionService:
             priority_changed=shadow_result.priority_changed,
             route_reason=decision.reason,
         )
+
+    def evaluate_rollout(self, request: ApiRolloutEvaluationRequest) -> RolloutEvaluationReport:
+        report = self.evaluator.evaluate(request)
+        rollout_evaluations_total.labels(decision=report.decision).inc()
+        rollout_priority_mismatch_rate.set(report.priority_mismatch_rate)
+        rollout_average_score_delta.set(report.average_score_delta)
+        return report

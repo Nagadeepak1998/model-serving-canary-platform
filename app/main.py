@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.config import settings
 from app.logging_config import configure_logging
 from app.metrics import metrics_response
-from app.schemas import PredictRequest
+from app.schemas import ApiRolloutEvaluationRequest, PredictRequest
 from app.service import PredictionService
 
 configure_logging()
@@ -24,3 +24,13 @@ def metrics():
 @app.post("/predict")
 def predict(request: PredictRequest):
     return service.predict(request)
+
+
+@app.post("/evaluate-rollout")
+def evaluate_rollout(request: ApiRolloutEvaluationRequest):
+    return service.evaluate_rollout(request)
+
+
+@app.post("/rollout/evaluate")
+def rollout_evaluate(request: ApiRolloutEvaluationRequest):
+    return service.evaluate_rollout(request)

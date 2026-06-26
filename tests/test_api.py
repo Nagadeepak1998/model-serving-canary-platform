@@ -33,3 +33,54 @@ def test_predict_returns_shadow_comparison() -> None:
     assert body["canary_percent"] == 100
     assert "route_reason" in body
     assert body["canary_risk_score"] >= body["baseline_risk_score"]
+
+
+def test_evaluate_rollout_returns_release_decision() -> None:
+    payload = {
+        "canary_percent": 25,
+        "max_priority_mismatch_rate": 0.25,
+        "max_average_score_delta": 0.14,
+        "cases": [
+            {
+                "ticket_id": "INC-10092",
+                "account_tier": "business",
+                "minutes_open": 43,
+                "message_length": 230,
+                "sentiment_score": 0.14,
+                "similar_incidents": 1,
+                "escalation_keywords": 0,
+                "expected_priority": "low",
+            }
+        ],
+    }
+
+    response = client.post("/rollout/evaluate", json=payload)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["decision"] in {"promote", "hold", "rollback"}
+    assert body["case_count"] == 1
+    assert body["cases"][0]["ticket_id"] == "INC-10092"
+
+
+def test_rollout_evaluate_alias_returns_release_decision() -> None:
+    payload = {
+        "canary_percent": 25,
+        "cases": [
+            {
+                "ticket_id": "INC-10092",
+                "account_tier": "business",
+                "minutes_open": 43,
+                "message_length": 230,
+                "sentiment_score": 0.14,
+                "similar_incidents": 1,
+                "escalation_keywords": 0,
+                "expected_priority": "medium",
+            }
+        ],
+    }
+
+    response = client.post("/rollout/evaluate", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["case_count"] == 1

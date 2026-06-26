@@ -1,0 +1,41 @@
+{
+  "decision": "promote",
+  "canary_percent": 25,
+  "case_count": 3,
+  "priority_mismatch_rate": 0.0,
+  "average_score_delta": 0.0,
+  "max_score_delta": 0.0,
+  "expected_priority_miss_rate": 0.0,
+  "reasons": [
+    "canary stayed within rollout guardrails"
+  ],
+  "cases": [
+    {
+      "ticket_id": "INC-10092",
+      "baseline_priority": "medium",
+      "canary_priority": "medium",
+      "score_delta": 0.0,
+      "priority_changed": false,
+      "expected_priority": "medium",
+      "expected_priority_matched": true
+    },
+    {
+      "ticket_id": "INC-10093",
+      "baseline_priority": "high",
+      "canary_priority": "high",
+      "score_delta": 0.0,
+      "priority_changed": false,
+      "expected_priority": "high",
+      "expected_priority_matched": true
+    },
+    {
+      "ticket_id": "INC-10094",
+      "baseline_priority": "critical",
+      "canary_priority": "critical",
+      "score_delta": 0.0,
+      "priority_changed": false,
+      "expected_priority": "critical",
+      "expected_priority_matched": true
+    }
+  ]
+}

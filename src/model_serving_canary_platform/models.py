@@ -31,3 +31,36 @@ class ShadowComparison(BaseModel):
     priority_changed: bool
     baseline_priority: str
     canary_priority: str
+
+
+class RolloutEvaluationCase(PredictionFeatures):
+    expected_priority: str | None = None
+
+
+class RolloutEvaluationRequest(BaseModel):
+    canary_percent: int = Field(ge=0, le=100)
+    max_priority_mismatch_rate: float = Field(default=0.2, ge=0.0, le=1.0)
+    max_average_score_delta: float = Field(default=0.12, ge=0.0, le=1.0)
+    cases: list[RolloutEvaluationCase] = Field(min_length=1)
+
+
+class RolloutEvaluationCaseResult(BaseModel):
+    ticket_id: str
+    baseline_priority: str
+    canary_priority: str
+    score_delta: float
+    priority_changed: bool
+    expected_priority: str | None
+    expected_priority_matched: bool | None
+
+
+class RolloutEvaluationReport(BaseModel):
+    decision: str
+    canary_percent: int
+    case_count: int
+    priority_mismatch_rate: float
+    average_score_delta: float
+    max_score_delta: float
+    expected_priority_miss_rate: float | None
+    reasons: list[str]
+    cases: list[RolloutEvaluationCaseResult]

@@ -1,4 +1,4 @@
-from prometheus_client import Counter, Histogram, generate_latest
+from prometheus_client import Counter, Gauge, Histogram, generate_latest
 from starlette.responses import Response
 
 
@@ -16,6 +16,22 @@ shadow_priority_mismatch_total = Counter(
 prediction_latency_seconds = Histogram(
     "prediction_latency_seconds",
     "Latency for prediction requests.",
+)
+
+rollout_evaluations_total = Counter(
+    "rollout_evaluations_total",
+    "Count of rollout evaluation reports by decision.",
+    ["decision"],
+)
+
+rollout_priority_mismatch_rate = Gauge(
+    "rollout_priority_mismatch_rate",
+    "Latest rollout evaluation priority mismatch rate.",
+)
+
+rollout_average_score_delta = Gauge(
+    "rollout_average_score_delta",
+    "Latest rollout evaluation average score delta.",
 )
 
 

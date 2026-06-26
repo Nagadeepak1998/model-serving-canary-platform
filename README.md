@@ -6,6 +6,7 @@
 
 - Deterministic canary rollout decisions based on a stable hash of `ticket_id`
 - Side-by-side baseline and canary prediction comparison for rollout review
+- CLI and API rollout evaluation gates with promote, hold, and rollback decisions
 - Prometheus metrics for selected model traffic, latency, and shadow mismatches
 - Docker, Kubernetes, and Terraform assets that make the repo recruiter-readable
 
@@ -18,9 +19,11 @@ flowchart LR
     Router -->|baseline| Base["Baseline model v1"]
     Router -->|canary| Canary["Canary model v2"]
     API --> Shadow["Shadow comparator"]
+    API --> Gate["Rollout evaluation gate"]
     Base --> Shadow
     Canary --> Shadow
     Shadow --> Metrics["Prometheus metrics"]
+    Gate --> Metrics
 ```
 
 ## Project layout
@@ -29,6 +32,7 @@ flowchart LR
 app/                         FastAPI entrypoint, config, metrics, service layer
 src/model_serving_canary_platform/  rollout and inference domain logic
 tests/                       API and routing tests
+data/                        Safe and risky rollout evaluation fixtures
 infra/docker/                Container image
 infra/k8s/                   Kubernetes manifests
 infra/terraform/             Terraform deployment skeleton
@@ -74,6 +78,21 @@ Metrics endpoint:
 curl http://127.0.0.1:8000/metrics
 ```
 
+Rollout evaluation API:
+
+```bash
+curl -X POST http://127.0.0.1:8000/rollout/evaluate \
+  -H "Content-Type: application/json" \
+  --data @data/rollout_eval_safe.json
+```
+
+CLI rollout gate:
+
+```bash
+PYTHONPATH=src canary-rollout-eval data/rollout_eval_safe.json
+PYTHONPATH=src canary-rollout-eval data/rollout_eval_risky.json
+```
+
 ## Docker
 
 ```bash
@@ -85,6 +104,7 @@ docker compose up --build
 ```bash
 pytest
 python scripts/smoke_predict.py
+PYTHONPATH=src canary-rollout-eval data/rollout_eval_safe.json
 ```
 
 ## Kubernetes and Terraform
@@ -96,6 +116,7 @@ python scripts/smoke_predict.py
 ## Observability and security notes
 
 - `/metrics` exposes Prometheus-compatible counters and latency histograms.
+- Rollout evaluation records the latest mismatch rate, average score delta, and decision count.
 - Stable hash routing avoids per-request randomness during rollout validation.
 - The repo uses environment-based configuration and does not include secrets.
 

@@ -1,0 +1,37 @@
+{
+  "canary_percent": 25,
+  "max_priority_mismatch_rate": 0.25,
+  "max_average_score_delta": 0.14,
+  "cases": [
+    {
+      "ticket_id": "INC-10092",
+      "account_tier": "business",
+      "minutes_open": 43,
+      "message_length": 230,
+      "sentiment_score": 0.14,
+      "similar_incidents": 1,
+      "escalation_keywords": 0,
+      "expected_priority": "medium"
+    },
+    {
+      "ticket_id": "INC-10093",
+      "account_tier": "standard",
+      "minutes_open": 82,
+      "message_length": 410,
+      "sentiment_score": -0.05,
+      "similar_incidents": 1,
+      "escalation_keywords": 0,
+      "expected_priority": "high"
+    },
+    {
+      "ticket_id": "INC-10094",
+      "account_tier": "business",
+      "minutes_open": 115,
+      "message_length": 650,
+      "sentiment_score": -0.18,
+      "similar_incidents": 2,
+      "escalation_keywords": 1,
+      "expected_priority": "critical"
+    }
+  ]
+}

@@ -22,9 +22,15 @@ dev = [
   "pytest>=8.2,<9.0",
 ]
 
+[project.scripts]
+canary-rollout-eval = "model_serving_canary_platform.cli:main"
+
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
+
+[tool.setuptools.package-dir]
+"" = "src"
 
 [tool.setuptools.packages.find]
 where = ["src"]
