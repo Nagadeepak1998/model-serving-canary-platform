@@ -89,8 +89,8 @@ curl -X POST http://127.0.0.1:8000/rollout/evaluate \
 CLI rollout gate:
 
 ```bash
-PYTHONPATH=src canary-rollout-eval data/rollout_eval_safe.json
-PYTHONPATH=src canary-rollout-eval data/rollout_eval_risky.json
+make eval-safe
+make eval-risky
 ```
 
 ## Docker
@@ -104,7 +104,8 @@ docker compose up --build
 ```bash
 pytest
 python scripts/smoke_predict.py
-PYTHONPATH=src canary-rollout-eval data/rollout_eval_safe.json
+make eval-safe
+make eval-risky
 ```
 
 ## Kubernetes and Terraform
