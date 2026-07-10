@@ -64,3 +64,31 @@ class RolloutEvaluationReport(BaseModel):
     expected_priority_miss_rate: float | None
     reasons: list[str]
     cases: list[RolloutEvaluationCaseResult]
+
+
+class RolloutHistoryWindow(BaseModel):
+    observed_at: str
+    evaluation: RolloutEvaluationRequest
+
+
+class RolloutHistoryRequest(BaseModel):
+    windows: list[RolloutHistoryWindow] = Field(min_length=2)
+    max_non_promote_windows: int = Field(default=1, ge=0)
+
+
+class RolloutHistoryWindowResult(BaseModel):
+    observed_at: str
+    decision: str
+    canary_percent: int
+    priority_mismatch_rate: float
+    average_score_delta: float
+
+
+class RolloutHistoryReport(BaseModel):
+    decision: str
+    reviewed_windows: int
+    non_promote_windows: int
+    rollback_windows: int
+    latest_decision: str
+    reasons: list[str]
+    windows: list[RolloutHistoryWindowResult]

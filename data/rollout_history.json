@@ -1,0 +1,41 @@
+{
+  "max_non_promote_windows": 1,
+  "windows": [
+    {
+      "observed_at": "2026-07-10T09:00:00Z",
+      "evaluation": {
+        "canary_percent": 10,
+        "max_priority_mismatch_rate": 0.25,
+        "max_average_score_delta": 0.14,
+        "cases": [
+          {"ticket_id": "INC-10092", "account_tier": "business", "minutes_open": 43, "message_length": 230, "sentiment_score": 0.14, "similar_incidents": 1, "escalation_keywords": 0, "expected_priority": "medium"},
+          {"ticket_id": "INC-10093", "account_tier": "standard", "minutes_open": 82, "message_length": 410, "sentiment_score": -0.05, "similar_incidents": 1, "escalation_keywords": 0, "expected_priority": "high"}
+        ]
+      }
+    },
+    {
+      "observed_at": "2026-07-10T09:15:00Z",
+      "evaluation": {
+        "canary_percent": 25,
+        "max_priority_mismatch_rate": 0.25,
+        "max_average_score_delta": 0.14,
+        "cases": [
+          {"ticket_id": "INC-10092", "account_tier": "business", "minutes_open": 43, "message_length": 230, "sentiment_score": 0.14, "similar_incidents": 1, "escalation_keywords": 0, "expected_priority": "medium"},
+          {"ticket_id": "INC-10094", "account_tier": "business", "minutes_open": 115, "message_length": 650, "sentiment_score": -0.18, "similar_incidents": 2, "escalation_keywords": 1, "expected_priority": "critical"}
+        ]
+      }
+    },
+    {
+      "observed_at": "2026-07-10T09:30:00Z",
+      "evaluation": {
+        "canary_percent": 50,
+        "max_priority_mismatch_rate": 0.2,
+        "max_average_score_delta": 0.1,
+        "cases": [
+          {"ticket_id": "INC-20001", "account_tier": "standard", "minutes_open": 10, "message_length": 100, "sentiment_score": -0.6, "similar_incidents": 0, "escalation_keywords": 2, "expected_priority": "medium"},
+          {"ticket_id": "INC-20002", "account_tier": "standard", "minutes_open": 10, "message_length": 100, "sentiment_score": -0.6, "similar_incidents": 4, "escalation_keywords": 2, "expected_priority": "high"}
+        ]
+      }
+    }
+  ]
+}

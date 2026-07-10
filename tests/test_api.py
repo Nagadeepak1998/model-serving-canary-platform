@@ -84,3 +84,34 @@ def test_rollout_evaluate_alias_returns_release_decision() -> None:
 
     assert response.status_code == 200
     assert response.json()["case_count"] == 1
+
+
+def test_rollout_history_returns_multi_window_decision() -> None:
+    payload = {
+        "windows": [
+            {"observed_at": "2026-07-10T09:00:00Z", "evaluation": {
+                "canary_percent": 10,
+                "cases": [{
+                    "ticket_id": "INC-10092", "account_tier": "business",
+                    "minutes_open": 43, "message_length": 230,
+                    "sentiment_score": 0.14, "similar_incidents": 1,
+                    "escalation_keywords": 0, "expected_priority": "medium"
+                }]
+            }},
+            {"observed_at": "2026-07-10T09:15:00Z", "evaluation": {
+                "canary_percent": 25,
+                "cases": [{
+                    "ticket_id": "INC-10092", "account_tier": "business",
+                    "minutes_open": 43, "message_length": 230,
+                    "sentiment_score": 0.14, "similar_incidents": 1,
+                    "escalation_keywords": 0, "expected_priority": "medium"
+                }]
+            }}
+        ]
+    }
+
+    response = client.post("/rollout/history", json=payload)
+
+    assert response.status_code == 200
+    assert response.json()["decision"] == "promote"
+    assert response.json()["reviewed_windows"] == 2

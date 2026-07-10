@@ -7,6 +7,7 @@
 - Deterministic canary rollout decisions based on a stable hash of `ticket_id`
 - Side-by-side baseline and canary prediction comparison for rollout review
 - CLI and API rollout evaluation gates with promote, hold, and rollback decisions
+- Multi-window rollout history reviews with incident-ready Markdown evidence
 - Prometheus metrics for selected model traffic, latency, and shadow mismatches
 - Docker, Kubernetes, and Terraform assets that make the repo recruiter-readable
 
@@ -20,10 +21,11 @@ flowchart LR
     Router -->|canary| Canary["Canary model v2"]
     API --> Shadow["Shadow comparator"]
     API --> Gate["Rollout evaluation gate"]
+    Gate --> History["Multi-window history review"]
     Base --> Shadow
     Canary --> Shadow
     Shadow --> Metrics["Prometheus metrics"]
-    Gate --> Metrics
+    History --> Metrics
 ```
 
 ## Project layout
@@ -32,7 +34,7 @@ flowchart LR
 app/                         FastAPI entrypoint, config, metrics, service layer
 src/model_serving_canary_platform/  rollout and inference domain logic
 tests/                       API and routing tests
-data/                        Safe and risky rollout evaluation fixtures
+data/                        Evaluation fixtures and rollout history manifest
 infra/docker/                Container image
 infra/k8s/                   Kubernetes manifests
 infra/terraform/             Terraform deployment skeleton
@@ -91,6 +93,20 @@ CLI rollout gate:
 ```bash
 make eval-safe
 make eval-risky
+make history-report
+```
+
+`make history-report` replays three dated rollout windows and writes
+`reports/rollout-history.json` plus the tracked reviewer summary
+`reports/rollout-history.md`. The sample ends in `rollback`, so the Make target
+accepts exit code `2` as the expected deployment-gate result.
+
+Rollout history API:
+
+```bash
+curl -X POST http://127.0.0.1:8000/rollout/history \
+  -H "Content-Type: application/json" \
+  --data @data/rollout_history.json
 ```
 
 ## Docker
@@ -106,6 +122,7 @@ pytest
 python scripts/smoke_predict.py
 make eval-safe
 make eval-risky
+make history-report
 ```
 
 ## Kubernetes and Terraform
@@ -118,6 +135,7 @@ make eval-risky
 
 - `/metrics` exposes Prometheus-compatible counters and latency histograms.
 - Rollout evaluation records the latest mismatch rate, average score delta, and decision count.
+- History reviews count promote, hold, and rollback outcomes without storing ticket payloads in metrics.
 - Stable hash routing avoids per-request randomness during rollout validation.
 - The repo uses environment-based configuration and does not include secrets.
 
@@ -125,4 +143,5 @@ make eval-risky
 
 - The models are deterministic heuristics, not trained artifacts.
 - Progressive delivery is implemented in-app rather than through a service mesh.
+- History fixtures are deterministic release evidence, not live production telemetry.
 - Terraform is a deployment skeleton and was not applied to a live cluster in this run.

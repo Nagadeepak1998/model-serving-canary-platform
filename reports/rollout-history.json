@@ -1,0 +1,33 @@
+{
+  "decision": "rollback",
+  "reviewed_windows": 3,
+  "non_promote_windows": 1,
+  "rollback_windows": 1,
+  "latest_decision": "rollback",
+  "reasons": [
+    "1 history window(s) require rollback"
+  ],
+  "windows": [
+    {
+      "observed_at": "2026-07-10T09:00:00Z",
+      "decision": "promote",
+      "canary_percent": 10,
+      "priority_mismatch_rate": 0.0,
+      "average_score_delta": 0.0
+    },
+    {
+      "observed_at": "2026-07-10T09:15:00Z",
+      "decision": "promote",
+      "canary_percent": 25,
+      "priority_mismatch_rate": 0.0,
+      "average_score_delta": 0.0
+    },
+    {
+      "observed_at": "2026-07-10T09:30:00Z",
+      "decision": "rollback",
+      "canary_percent": 50,
+      "priority_mismatch_rate": 1.0,
+      "average_score_delta": 0.145
+    }
+  ]
+}

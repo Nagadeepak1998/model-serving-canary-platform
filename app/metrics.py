@@ -34,6 +34,12 @@ rollout_average_score_delta = Gauge(
     "Latest rollout evaluation average score delta.",
 )
 
+rollout_history_reviews_total = Counter(
+    "rollout_history_reviews_total",
+    "Count of multi-window rollout history reviews by decision.",
+    ["decision"],
+)
+
 
 def metrics_response() -> Response:
     return Response(generate_latest(), media_type="text/plain; version=0.0.4")

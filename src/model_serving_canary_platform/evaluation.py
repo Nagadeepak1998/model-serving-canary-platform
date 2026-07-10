@@ -5,6 +5,9 @@ from model_serving_canary_platform.models import (
     RolloutEvaluationCaseResult,
     RolloutEvaluationReport,
     RolloutEvaluationRequest,
+    RolloutHistoryReport,
+    RolloutHistoryRequest,
+    RolloutHistoryWindowResult,
 )
 from model_serving_canary_platform.shadow import ShadowComparator
 
@@ -81,4 +84,44 @@ class RolloutEvaluator:
             expected_priority_miss_rate=expected_priority_miss_rate,
             reasons=reasons,
             cases=case_results,
+        )
+
+    def review_history(self, request: RolloutHistoryRequest) -> RolloutHistoryReport:
+        windows: list[RolloutHistoryWindowResult] = []
+        for window in request.windows:
+            report = self.evaluate(window.evaluation)
+            windows.append(
+                RolloutHistoryWindowResult(
+                    observed_at=window.observed_at,
+                    decision=report.decision,
+                    canary_percent=report.canary_percent,
+                    priority_mismatch_rate=report.priority_mismatch_rate,
+                    average_score_delta=report.average_score_delta,
+                )
+            )
+
+        non_promote_windows = sum(window.decision != "promote" for window in windows)
+        rollback_windows = sum(window.decision == "rollback" for window in windows)
+        latest_decision = windows[-1].decision
+        reasons: list[str] = []
+        decision = "promote"
+        if rollback_windows:
+            decision = "rollback"
+            reasons.append(f"{rollback_windows} history window(s) require rollback")
+        elif non_promote_windows > request.max_non_promote_windows or latest_decision != "promote":
+            decision = "hold"
+            reasons.append(
+                f"{non_promote_windows} non-promote window(s); latest decision is {latest_decision}"
+            )
+        else:
+            reasons.append("rollout history stayed within promotion guardrails")
+
+        return RolloutHistoryReport(
+            decision=decision,
+            reviewed_windows=len(windows),
+            non_promote_windows=non_promote_windows,
+            rollback_windows=rollback_windows,
+            latest_decision=latest_decision,
+            reasons=reasons,
+            windows=windows,
         )
