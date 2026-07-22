@@ -3,6 +3,7 @@
   "windows": [
     {
       "observed_at": "2026-07-10T09:00:00Z",
+      "stage_started_at": "2026-07-10T08:55:00Z",
       "evaluation": {
         "canary_percent": 10,
         "max_priority_mismatch_rate": 0.25,
@@ -15,6 +16,7 @@
     },
     {
       "observed_at": "2026-07-10T09:15:00Z",
+      "stage_started_at": "2026-07-10T09:10:00Z",
       "evaluation": {
         "canary_percent": 25,
         "max_priority_mismatch_rate": 0.25,
@@ -27,6 +29,7 @@
     },
     {
       "observed_at": "2026-07-10T09:30:00Z",
+      "stage_started_at": "2026-07-10T08:45:00Z",
       "evaluation": {
         "canary_percent": 50,
         "max_priority_mismatch_rate": 0.2,

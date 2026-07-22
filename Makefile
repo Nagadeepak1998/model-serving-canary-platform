@@ -2,7 +2,7 @@ PYTHON ?= python3
 VENV ?= .venv
 ACTIVATE = . $(VENV)/bin/activate
 
-.PHONY: venv install test run smoke eval-safe eval-risky history-report lint
+.PHONY: venv install test run smoke eval-safe eval-risky history-report control-review control-review-blocked lint
 
 venv:
 	$(PYTHON) -m venv $(VENV)
@@ -28,6 +28,12 @@ eval-risky:
 
 history-report:
 	$(ACTIVATE) && PYTHONPATH=src:. python -m model_serving_canary_platform.cli history data/rollout_history.json --output reports/rollout-history.json --markdown reports/rollout-history.md || test $$? -eq 2
+
+control-review:
+	$(ACTIVATE) && PYTHONPATH=src:. python -m model_serving_canary_platform.cli control-review data/rollout_control_ready.json --output reports/rollout-control-ready.json --markdown reports/rollout-control-ready.md
+
+control-review-blocked:
+	$(ACTIVATE) && PYTHONPATH=src:. python -m model_serving_canary_platform.cli control-review data/rollout_control_blocked.json || test $$? -eq 2
 
 lint:
 	$(ACTIVATE) && python -m compileall app src tests

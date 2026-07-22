@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime
+
 from model_serving_canary_platform.inference import baseline_predict, canary_predict
 from model_serving_canary_platform.models import (
     RolloutEvaluationCaseResult,
@@ -90,6 +92,15 @@ class RolloutEvaluator:
         windows: list[RolloutHistoryWindowResult] = []
         for window in request.windows:
             report = self.evaluate(window.evaluation)
+            stage_age_minutes = None
+            if window.stage_started_at:
+                observed_at = datetime.fromisoformat(window.observed_at.replace("Z", "+00:00"))
+                started_at = datetime.fromisoformat(window.stage_started_at.replace("Z", "+00:00"))
+                stage_age_minutes = int((observed_at - started_at).total_seconds() // 60)
+            stale = (
+                stage_age_minutes is not None
+                and stage_age_minutes > window.max_stage_age_minutes
+            )
             windows.append(
                 RolloutHistoryWindowResult(
                     observed_at=window.observed_at,
@@ -97,17 +108,35 @@ class RolloutEvaluator:
                     canary_percent=report.canary_percent,
                     priority_mismatch_rate=report.priority_mismatch_rate,
                     average_score_delta=report.average_score_delta,
+                    stage_age_minutes=stage_age_minutes,
+                    stale=stale,
                 )
             )
 
         non_promote_windows = sum(window.decision != "promote" for window in windows)
         rollback_windows = sum(window.decision == "rollback" for window in windows)
+        stale_windows = sum(window.stale for window in windows)
         latest_decision = windows[-1].decision
+        rollback_evidence_complete = all(
+            source.rollback is not None
+            for source, result in zip(request.windows, windows, strict=True)
+            if result.decision == "rollback"
+        )
+        rollback_completion = (
+            "not-required"
+            if rollback_windows == 0
+            else "complete" if rollback_evidence_complete else "incomplete"
+        )
         reasons: list[str] = []
         decision = "promote"
         if rollback_windows:
             decision = "rollback"
             reasons.append(f"{rollback_windows} history window(s) require rollback")
+            if not rollback_evidence_complete:
+                reasons.append("rollback completion evidence is missing")
+        elif stale_windows:
+            decision = "hold"
+            reasons.append(f"{stale_windows} rollout stage(s) exceeded their age limit")
         elif non_promote_windows > request.max_non_promote_windows or latest_decision != "promote":
             decision = "hold"
             reasons.append(
@@ -121,7 +150,10 @@ class RolloutEvaluator:
             reviewed_windows=len(windows),
             non_promote_windows=non_promote_windows,
             rollback_windows=rollback_windows,
+            stale_windows=stale_windows,
             latest_decision=latest_decision,
+            rollback_completion=rollback_completion,
+            rollback_evidence_complete=rollback_evidence_complete,
             reasons=reasons,
             windows=windows,
         )

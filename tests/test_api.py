@@ -115,3 +115,17 @@ def test_rollout_history_returns_multi_window_decision() -> None:
     assert response.status_code == 200
     assert response.json()["decision"] == "promote"
     assert response.json()["reviewed_windows"] == 2
+    assert response.json()["stale_windows"] == 0
+
+
+def test_rollout_control_review_returns_auditable_decision() -> None:
+    payload = {
+        "release_id": "ticket-triage-v2-api", "baseline_model": "ticket-triage-v1",
+        "canary_model": "ticket-triage-v2", "reference_time": "2026-07-22T16:00:00Z",
+        "approval": {"requested_by": "ml-platform-engineer", "approved_by": "sre-release-manager", "approved_at": "2026-07-22T15:30:00Z"},
+        "stages": [{"canary_percent": 10, "started_at": "2026-07-22T15:32:00Z", "completed_at": "2026-07-22T15:40:00Z", "decision": "promote", "evidence_uri": "reports/rollout-10.json"}],
+    }
+    response = client.post("/rollout/control-review", json=payload)
+    assert response.status_code == 200
+    assert response.json()["decision"] == "ready"
+    assert response.json()["approval_age_minutes"] == 30

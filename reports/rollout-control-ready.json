@@ -1,0 +1,10 @@
+{
+  "decision": "ready",
+  "release_id": "ticket-triage-v2-2026.07.22",
+  "reviewed_stages": 3,
+  "latest_canary_percent": 50,
+  "approval_age_minutes": 30,
+  "rollback_required": false,
+  "rollback_complete": true,
+  "findings": []
+}

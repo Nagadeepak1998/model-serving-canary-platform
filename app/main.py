@@ -3,7 +3,12 @@ from fastapi import FastAPI
 from app.config import settings
 from app.logging_config import configure_logging
 from app.metrics import metrics_response
-from app.schemas import ApiRolloutEvaluationRequest, ApiRolloutHistoryRequest, PredictRequest
+from app.schemas import (
+    ApiRolloutControlRequest,
+    ApiRolloutEvaluationRequest,
+    ApiRolloutHistoryRequest,
+    PredictRequest,
+)
 from app.service import PredictionService
 
 configure_logging()
@@ -39,3 +44,8 @@ def rollout_evaluate(request: ApiRolloutEvaluationRequest):
 @app.post("/rollout/history")
 def rollout_history(request: ApiRolloutHistoryRequest):
     return service.review_rollout_history(request)
+
+
+@app.post("/rollout/control-review")
+def rollout_control_review(request: ApiRolloutControlRequest):
+    return service.review_rollout_control(request)

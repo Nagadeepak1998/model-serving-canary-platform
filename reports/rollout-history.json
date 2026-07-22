@@ -3,9 +3,13 @@
   "reviewed_windows": 3,
   "non_promote_windows": 1,
   "rollback_windows": 1,
+  "stale_windows": 1,
   "latest_decision": "rollback",
+  "rollback_completion": "incomplete",
+  "rollback_evidence_complete": false,
   "reasons": [
-    "1 history window(s) require rollback"
+    "1 history window(s) require rollback",
+    "rollback completion evidence is missing"
   ],
   "windows": [
     {
@@ -13,21 +17,27 @@
       "decision": "promote",
       "canary_percent": 10,
       "priority_mismatch_rate": 0.0,
-      "average_score_delta": 0.0
+      "average_score_delta": 0.0,
+      "stage_age_minutes": 5,
+      "stale": false
     },
     {
       "observed_at": "2026-07-10T09:15:00Z",
       "decision": "promote",
       "canary_percent": 25,
       "priority_mismatch_rate": 0.0,
-      "average_score_delta": 0.0
+      "average_score_delta": 0.0,
+      "stage_age_minutes": 5,
+      "stale": false
     },
     {
       "observed_at": "2026-07-10T09:30:00Z",
       "decision": "rollback",
       "canary_percent": 50,
       "priority_mismatch_rate": 1.0,
-      "average_score_delta": 0.145
+      "average_score_delta": 0.145,
+      "stage_age_minutes": 45,
+      "stale": true
     }
   ]
 }

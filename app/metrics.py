@@ -40,6 +40,22 @@ rollout_history_reviews_total = Counter(
     ["decision"],
 )
 
+rollout_stale_windows = Gauge(
+    "rollout_stale_windows",
+    "Stale rollout stages found by the latest history review.",
+)
+
+rollout_rollback_evidence_complete = Gauge(
+    "rollout_rollback_evidence_complete",
+    "Whether rollback completion evidence is complete when rollback is required.",
+)
+
+rollout_control_reviews_total = Counter(
+    "rollout_control_reviews_total",
+    "Count of rollout control reviews by decision.",
+    ["decision"],
+)
+
 
 def metrics_response() -> Response:
     return Response(generate_latest(), media_type="text/plain; version=0.0.4")

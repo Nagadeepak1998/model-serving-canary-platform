@@ -68,7 +68,16 @@ class RolloutEvaluationReport(BaseModel):
 
 class RolloutHistoryWindow(BaseModel):
     observed_at: str
+    stage_started_at: str | None = None
+    max_stage_age_minutes: int = Field(default=30, ge=1)
     evaluation: RolloutEvaluationRequest
+    rollback: "RollbackCompletionEvidence | None" = None
+
+
+class RollbackCompletionEvidence(BaseModel):
+    completed_at: str
+    owner: str = Field(min_length=3)
+    evidence_url: str = Field(min_length=8)
 
 
 class RolloutHistoryRequest(BaseModel):
@@ -82,6 +91,8 @@ class RolloutHistoryWindowResult(BaseModel):
     canary_percent: int
     priority_mismatch_rate: float
     average_score_delta: float
+    stage_age_minutes: int | None
+    stale: bool
 
 
 class RolloutHistoryReport(BaseModel):
@@ -89,6 +100,52 @@ class RolloutHistoryReport(BaseModel):
     reviewed_windows: int
     non_promote_windows: int
     rollback_windows: int
+    stale_windows: int
     latest_decision: str
+    rollback_completion: str
+    rollback_evidence_complete: bool
     reasons: list[str]
     windows: list[RolloutHistoryWindowResult]
+
+
+class RolloutStageEvidence(BaseModel):
+    canary_percent: int = Field(ge=0, le=100)
+    started_at: str
+    completed_at: str | None = None
+    decision: str
+    evidence_uri: str = Field(min_length=1)
+
+
+class RolloutApproval(BaseModel):
+    requested_by: str = Field(min_length=1)
+    approved_by: str = Field(min_length=1)
+    approved_at: str
+
+
+class RollbackEvidence(BaseModel):
+    required: bool = False
+    completed_at: str | None = None
+    restored_model: str | None = None
+    evidence_uri: str | None = None
+
+
+class RolloutControlRequest(BaseModel):
+    release_id: str = Field(min_length=1)
+    baseline_model: str = Field(min_length=1)
+    canary_model: str = Field(min_length=1)
+    reference_time: str
+    approval_max_age_minutes: int = Field(default=60, ge=1)
+    approval: RolloutApproval
+    stages: list[RolloutStageEvidence] = Field(min_length=1)
+    rollback: RollbackEvidence = Field(default_factory=RollbackEvidence)
+
+
+class RolloutControlReport(BaseModel):
+    decision: str
+    release_id: str
+    reviewed_stages: int
+    latest_canary_percent: int
+    approval_age_minutes: int
+    rollback_required: bool
+    rollback_complete: bool
+    findings: list[str]

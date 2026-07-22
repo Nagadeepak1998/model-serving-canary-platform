@@ -8,20 +8,29 @@ from app.metrics import (
     prediction_latency_seconds,
     prediction_requests_total,
     rollout_average_score_delta,
+    rollout_control_reviews_total,
     rollout_evaluations_total,
     rollout_history_reviews_total,
     rollout_priority_mismatch_rate,
+    rollout_rollback_evidence_complete,
+    rollout_stale_windows,
     shadow_priority_mismatch_total,
 )
 from app.schemas import (
+    ApiRolloutControlRequest,
     ApiRolloutEvaluationRequest,
     ApiRolloutHistoryRequest,
     PredictRequest,
     PredictResponse,
 )
+from model_serving_canary_platform.control import review_rollout_control
 from model_serving_canary_platform.evaluation import RolloutEvaluator
 from model_serving_canary_platform.inference import baseline_predict, canary_predict
-from model_serving_canary_platform.models import RolloutEvaluationReport, RolloutHistoryReport
+from model_serving_canary_platform.models import (
+    RolloutControlReport,
+    RolloutEvaluationReport,
+    RolloutHistoryReport,
+)
 from model_serving_canary_platform.rollout import CanaryRouter
 from model_serving_canary_platform.shadow import ShadowComparator
 
@@ -92,4 +101,11 @@ class PredictionService:
     def review_rollout_history(self, request: ApiRolloutHistoryRequest) -> RolloutHistoryReport:
         report = self.evaluator.review_history(request)
         rollout_history_reviews_total.labels(decision=report.decision).inc()
+        rollout_stale_windows.set(report.stale_windows)
+        rollout_rollback_evidence_complete.set(report.rollback_evidence_complete)
+        return report
+
+    def review_rollout_control(self, request: ApiRolloutControlRequest) -> RolloutControlReport:
+        report = review_rollout_control(request)
+        rollout_control_reviews_total.labels(decision=report.decision).inc()
         return report

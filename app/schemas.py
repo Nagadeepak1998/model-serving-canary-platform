@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 
 from model_serving_canary_platform.models import (
     PredictionFeatures,
+    RolloutControlRequest,
     RolloutEvaluationRequest,
     RolloutHistoryRequest,
 )
@@ -27,4 +28,8 @@ class ApiRolloutEvaluationRequest(RolloutEvaluationRequest):
 
 
 class ApiRolloutHistoryRequest(RolloutHistoryRequest):
+    pass
+
+
+class ApiRolloutControlRequest(RolloutControlRequest):
     pass
